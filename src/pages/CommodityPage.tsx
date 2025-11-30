@@ -2,62 +2,23 @@ import React from 'react';
 import { NewsCard } from '../components/NewsCard';
 import { Sidebar } from '../components/Sidebar';
 import { useRealTimeNews } from '../hooks/useRealTimeNews';
+import { useCommodityData } from '../hooks/useMarketData';
 import { Droplet, Wheat, Zap, TrendingUp, TrendingDown } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 export function CommodityPage() {
   const {
     news
   } = useRealTimeNews();
+  const {
+    commodities
+  } = useCommodityData();
   const commodityNews = news.filter(n => n.category === 'Commodity');
-  const commodities = [{
-    name: 'Minyak Mentah WTI',
-    price: '$78.45',
-    change: '-$1.23',
-    percent: '-1.54%',
-    trend: 'down',
-    icon: Droplet,
-    color: 'text-blue-600'
-  }, {
-    name: 'Emas',
-    price: '$2,045.30',
-    change: '+$12.50',
-    percent: '+0.61%',
-    trend: 'up',
-    icon: TrendingUp,
-    color: 'text-yellow-600'
-  }, {
-    name: 'Perak',
-    price: '$24.67',
-    change: '+$0.34',
-    percent: '+1.40%',
-    trend: 'up',
-    icon: TrendingUp,
-    color: 'text-gray-500'
-  }, {
-    name: 'Gas Alam',
-    price: '$2.89',
-    change: '-$0.05',
-    percent: '-1.70%',
-    trend: 'down',
-    icon: Zap,
-    color: 'text-orange-600'
-  }, {
-    name: 'Gandum',
-    price: '$645.25',
-    change: '+$8.75',
-    percent: '+1.38%',
-    trend: 'up',
-    icon: Wheat,
-    color: 'text-amber-700'
-  }, {
-    name: 'Kopi',
-    price: '$185.40',
-    change: '-$2.10',
-    percent: '-1.12%',
-    trend: 'down',
-    icon: Droplet,
-    color: 'text-brown-600'
-  }];
+  const iconMap: Record<string, any> = {
+    Droplet: Droplet,
+    TrendingUp: TrendingUp,
+    Zap: Zap,
+    Wheat: Wheat
+  };
   return <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-amber-900 to-amber-700 text-white py-12 border-b-4 border-[#FF6B00]">
@@ -83,37 +44,62 @@ export function CommodityPage() {
       {/* Commodity Prices Grid */}
       <div className="bg-white border-b border-gray-200 py-6">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl font-bold mb-4">Harga Komoditas Real-Time</h2>
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            Harga Komoditas Real-Time
+            <span className="ml-2 text-xs font-normal text-gray-500 bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">
+              LIVE
+            </span>
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {commodities.map((commodity, i) => {
-            const Icon = commodity.icon;
-            return <motion.div key={commodity.name} initial={{
-              opacity: 0,
-              y: 20
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} transition={{
-              delay: i * 0.1
-            }} className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-lg border border-gray-200 hover:shadow-lg transition-all cursor-pointer group">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon className={`w-5 h-5 ${commodity.color} group-hover:scale-110 transition-transform`} />
-                  </div>
-                  <div className="text-xs text-gray-500 mb-1">
-                    {commodity.name}
-                  </div>
-                  <div className="text-lg font-bold text-gray-900 mb-1">
-                    {commodity.price}
-                  </div>
-                  <div className={`text-sm font-semibold flex items-center gap-1 ${commodity.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                    {commodity.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                    {commodity.change}
-                  </div>
-                  <div className={`text-xs ${commodity.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                    {commodity.percent}
-                  </div>
-                </motion.div>;
-          })}
+            <AnimatePresence mode="wait">
+              {commodities.map((commodity, i) => {
+              const Icon = iconMap[commodity.icon];
+              return <motion.div key={commodity.name} layout initial={{
+                opacity: 0,
+                y: 20
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} exit={{
+                opacity: 0,
+                scale: 0.9
+              }} transition={{
+                delay: i * 0.1
+              }} whileHover={{
+                scale: 1.05,
+                y: -5
+              }} className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-lg border border-gray-200 hover:shadow-lg transition-all cursor-pointer group">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon className={`w-5 h-5 ${commodity.color} group-hover:scale-110 transition-transform`} />
+                    </div>
+                    <div className="text-xs text-gray-500 mb-1">
+                      {commodity.name}
+                    </div>
+                    <motion.div key={commodity.price} initial={{
+                  scale: 1.1,
+                  color: '#FF6B00'
+                }} animate={{
+                  scale: 1,
+                  color: '#111827'
+                }} transition={{
+                  duration: 0.3
+                }} className="text-lg font-bold mb-1">
+                      {commodity.price}
+                    </motion.div>
+                    <motion.div key={commodity.change} initial={{
+                  scale: 1.1
+                }} animate={{
+                  scale: 1
+                }} className={`text-sm font-semibold flex items-center gap-1 ${commodity.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                      {commodity.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                      {commodity.change}
+                    </motion.div>
+                    <div className={`text-xs ${commodity.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                      {commodity.percent}
+                    </div>
+                  </motion.div>;
+            })}
+            </AnimatePresence>
           </div>
         </div>
       </div>

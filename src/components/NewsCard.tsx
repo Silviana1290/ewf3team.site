@@ -1,6 +1,7 @@
 import React from 'react';
 import { NewsItem } from '../types/news';
-import { Calendar, Tag } from 'lucide-react';
+import { Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
 interface NewsCardProps {
   news: NewsItem;
   variant?: 'default' | 'compact' | 'featured';
@@ -16,14 +17,30 @@ export function NewsCard({
     year: 'numeric'
   });
   if (variant === 'featured') {
-    return <div className="group cursor-pointer relative overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white border border-gray-100">
+    return <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} whileHover={{
+      y: -5
+    }} transition={{
+      duration: 0.3
+    }} className="group cursor-pointer relative overflow-hidden rounded-lg shadow-sm hover:shadow-xl transition-all bg-white border border-gray-100">
         <div className="relative h-64 md:h-96 overflow-hidden">
-          <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <motion.img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover" whileHover={{
+          scale: 1.05
+        }} transition={{
+          duration: 0.5
+        }} />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-0 left-0 p-6 text-white">
-            <span className="inline-block px-3 py-1 bg-[#FF6B00] text-xs font-bold uppercase tracking-wider mb-3 rounded-sm">
+            <motion.span whileHover={{
+            scale: 1.05
+          }} className="inline-block px-3 py-1 bg-[#FF6B00] text-xs font-bold uppercase tracking-wider mb-3 rounded-sm cursor-pointer">
               {news.category}
-            </span>
+            </motion.span>
             <h2 className="text-2xl md:text-3xl font-bold mb-2 leading-tight group-hover:text-[#FF6B00] transition-colors">
               {news.title}
             </h2>
@@ -41,12 +58,27 @@ export function NewsCard({
             </div>
           </div>
         </div>
-      </div>;
+      </motion.div>;
   }
   if (variant === 'compact') {
-    return <div className="group cursor-pointer flex gap-4 items-start py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors p-2 rounded-md">
+    return <motion.div initial={{
+      opacity: 0,
+      x: -20
+    }} animate={{
+      opacity: 1,
+      x: 0
+    }} whileHover={{
+      x: 5,
+      backgroundColor: '#f9fafb'
+    }} transition={{
+      duration: 0.2
+    }} className="group cursor-pointer flex gap-4 items-start py-4 border-b border-gray-100 last:border-0 p-2 rounded-md">
         <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md">
-          <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+          <motion.img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover" whileHover={{
+          scale: 1.1
+        }} transition={{
+          duration: 0.3
+        }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -62,15 +94,32 @@ export function NewsCard({
             {news.title}
           </h3>
         </div>
-      </div>;
+      </motion.div>;
   }
-  return <div className="group cursor-pointer bg-white rounded-lg overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+  return <motion.div initial={{
+    opacity: 0,
+    y: 20
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} whileHover={{
+    y: -5,
+    boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)'
+  }} transition={{
+    duration: 0.3
+  }} className="group cursor-pointer bg-white rounded-lg overflow-hidden border border-gray-100 h-full flex flex-col">
       <div className="h-48 overflow-hidden relative">
-        <img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        <motion.img src={news.imageUrl} alt={news.title} className="w-full h-full object-cover" whileHover={{
+        scale: 1.1
+      }} transition={{
+        duration: 0.5
+      }} />
         <div className="absolute top-3 left-3">
-          <span className="px-2 py-1 bg-black/70 text-white text-xs font-bold uppercase rounded-sm backdrop-blur-sm">
+          <motion.span whileHover={{
+          scale: 1.05
+        }} className="px-2 py-1 bg-black/70 text-white text-xs font-bold uppercase rounded-sm backdrop-blur-sm">
             {news.category}
-          </span>
+          </motion.span>
         </div>
       </div>
       <div className="p-4 flex-1 flex flex-col">
@@ -88,10 +137,12 @@ export function NewsCard({
           <span className="text-xs font-semibold text-gray-400 uppercase">
             {news.source}
           </span>
-          <span className="text-xs font-bold text-[#FF6B00] group-hover:translate-x-1 transition-transform">
+          <motion.span whileHover={{
+          x: 5
+        }} className="text-xs font-bold text-[#FF6B00]">
             Read More →
-          </span>
+          </motion.span>
         </div>
       </div>
-    </div>;
+    </motion.div>;
 }

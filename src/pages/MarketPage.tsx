@@ -1,51 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NewsCard } from '../components/NewsCard';
 import { Sidebar } from '../components/Sidebar';
 import { useRealTimeNews } from '../hooks/useRealTimeNews';
+import { useMarketData } from '../hooks/useMarketData';
 import { TrendingUp, TrendingDown, Activity, BarChart3 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 export function MarketPage() {
   const {
     news
   } = useRealTimeNews();
+  const {
+    indices
+  } = useMarketData();
   const marketNews = news.filter(n => n.category === 'Market');
-  const indices = [{
-    name: 'IHSG',
-    value: '7,234.56',
-    change: '+45.23',
-    percent: '+0.63%',
-    trend: 'up'
-  }, {
-    name: 'Dow Jones',
-    value: '38,456.78',
-    change: '-123.45',
-    percent: '-0.32%',
-    trend: 'down'
-  }, {
-    name: 'S&P 500',
-    value: '5,123.45',
-    change: '+23.12',
-    percent: '+0.45%',
-    trend: 'up'
-  }, {
-    name: 'NASDAQ',
-    value: '16,234.89',
-    change: '+89.34',
-    percent: '+0.55%',
-    trend: 'up'
-  }, {
-    name: 'Nikkei 225',
-    value: '33,456.12',
-    change: '-234.56',
-    percent: '-0.70%',
-    trend: 'down'
-  }, {
-    name: 'FTSE 100',
-    value: '7,890.34',
-    change: '+12.45',
-    percent: '+0.16%',
-    trend: 'up'
-  }];
   const topMovers = [{
     symbol: 'BBCA',
     name: 'Bank Central Asia',
@@ -99,26 +66,46 @@ export function MarketPage() {
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-[#FF6B00]" />
             Indeks Global
+            <span className="ml-2 text-xs font-normal text-gray-500 bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">
+              LIVE
+            </span>
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {indices.map((index, i) => <motion.div key={index.name} initial={{
-            opacity: 0,
-            y: 20
-          }} animate={{
-            opacity: 1,
-            y: 0
-          }} transition={{
-            delay: i * 0.1
-          }} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="text-xs text-gray-500 mb-1">{index.name}</div>
-                <div className="text-lg font-bold text-gray-900 mb-1">
-                  {index.value}
-                </div>
-                <div className={`text-sm font-semibold flex items-center gap-1 ${index.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                  {index.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                  {index.change} ({index.percent})
-                </div>
-              </motion.div>)}
+            <AnimatePresence mode="wait">
+              {indices.map((index, i) => <motion.div key={index.name} layout initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} exit={{
+              opacity: 0,
+              scale: 0.9
+            }} transition={{
+              delay: i * 0.1
+            }} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="text-xs text-gray-500 mb-1">{index.name}</div>
+                  <motion.div key={index.value} initial={{
+                scale: 1.1,
+                color: '#FF6B00'
+              }} animate={{
+                scale: 1,
+                color: '#111827'
+              }} transition={{
+                duration: 0.3
+              }} className="text-lg font-bold mb-1">
+                    {index.value}
+                  </motion.div>
+                  <motion.div key={index.change} initial={{
+                scale: 1.1
+              }} animate={{
+                scale: 1
+              }} className={`text-sm font-semibold flex items-center gap-1 ${index.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                    {index.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                    {index.change} ({index.percent})
+                  </motion.div>
+                </motion.div>)}
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -152,7 +139,10 @@ export function MarketPage() {
                 x: 0
               }} transition={{
                 delay: i * 0.1
-              }} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              }} whileHover={{
+                scale: 1.02,
+                x: 5
+              }} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
                     <div>
                       <div className="font-bold text-gray-900">
                         {stock.symbol}

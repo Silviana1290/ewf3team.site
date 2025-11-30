@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NewsItem } from '../types/news';
-const MOCK_NEWS: NewsItem[] = [{
+const INITIAL_NEWS: NewsItem[] = [{
   id: '1',
   title: 'Minyak Anjlok, Fokus Beralih Ke Pertemuan OPEC+',
   excerpt: 'Harga minyak mentah berjangka turun tipis pada hari Jumat karena investor mempertimbangkan premi risiko geopolitik minyak di tengah perundingan damai Rusia-Ukraina.',
@@ -49,20 +49,61 @@ const MOCK_NEWS: NewsItem[] = [{
   timestamp: new Date(Date.now() - 18000000).toISOString(),
   imageUrl: 'https://images.unsplash.com/photo-1542206395-9feb3edaa68d?auto=format&fit=crop&q=80&w=800'
 }];
+const NEWS_TEMPLATES = [{
+  title: 'IHSG Ditutup Menguat 0.8% di Tengah Sentimen Positif',
+  excerpt: 'Indeks Harga Saham Gabungan (IHSG) ditutup menguat pada perdagangan hari ini didorong oleh sentimen positif dari sektor perbankan dan teknologi.',
+  category: 'Market' as const,
+  source: 'EWF Pro' as const
+}, {
+  title: 'Rupiah Menguat Terhadap Dolar AS di Pasar Spot',
+  excerpt: 'Nilai tukar rupiah terhadap dolar AS menguat tipis pada perdagangan pagi ini seiring optimisme pelaku pasar terhadap stabilitas ekonomi domestik.',
+  category: 'Economy' as const,
+  source: 'Reuters' as const
+}, {
+  title: 'Harga Minyak Dunia Naik Dipicu Ketegangan Geopolitik',
+  excerpt: 'Harga minyak mentah dunia kembali naik signifikan dipicu oleh meningkatnya ketegangan geopolitik di Timur Tengah.',
+  category: 'Commodity' as const,
+  source: 'CNBC' as const
+}, {
+  title: 'Bank Indonesia Pertahankan Suku Bunga Acuan di 6%',
+  excerpt: 'Bank Indonesia memutuskan untuk mempertahankan suku bunga acuan BI Rate di level 6% untuk menjaga stabilitas ekonomi.',
+  category: 'Fiscal' as const,
+  source: 'Trading Economics' as const
+}, {
+  title: 'Wall Street Ditutup Variatif Menjelang Rilis Data Inflasi',
+  excerpt: 'Bursa saham Wall Street ditutup variatif pada perdagangan kemarin menjelang rilis data inflasi AS yang dinanti pasar.',
+  category: 'Global' as const,
+  source: 'Investing.com' as const
+}];
 export function useRealTimeNews() {
-  const [news, setNews] = useState<NewsItem[]>(MOCK_NEWS);
+  const [news, setNews] = useState<NewsItem[]>(INITIAL_NEWS);
   const [loading, setLoading] = useState(false);
 
-  // Simulate real-time updates
+  // Simulate real-time news updates
   useEffect(() => {
     const interval = setInterval(() => {
-      // In a real app, this would fetch new data
-      // For now, we just update timestamps to make it look "live"
+      // Randomly add new news (30% chance every interval)
+      if (Math.random() > 0.7) {
+        const template = NEWS_TEMPLATES[Math.floor(Math.random() * NEWS_TEMPLATES.length)];
+        const newNewsItem: NewsItem = {
+          id: `news-${Date.now()}-${Math.random()}`,
+          title: template.title,
+          excerpt: template.excerpt,
+          source: template.source,
+          category: template.category,
+          timestamp: new Date().toISOString(),
+          imageUrl: `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?auto=format&fit=crop&q=80&w=800`
+        };
+        setNews(prev => [newNewsItem, ...prev].slice(0, 20)); // Keep only latest 20 news
+      }
+
+      // Update timestamps to make it look "live"
       setNews(prev => prev.map(item => ({
         ...item,
-        timestamp: new Date(new Date(item.timestamp).getTime() + 1000).toISOString() // Fake update
+        timestamp: new Date(new Date(item.timestamp).getTime() + 1000).toISOString()
       })));
-    }, 60000);
+    }, 30000); // Check every 30 seconds
+
     return () => clearInterval(interval);
   }, []);
   return {

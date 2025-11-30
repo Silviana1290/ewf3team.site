@@ -12,10 +12,19 @@ import { CalendarPage } from './pages/CalendarPage';
 import { GlobalPage } from './pages/GlobalPage';
 import { MarketAnalysisPage } from './pages/MarketAnalysisPage';
 import { UtilitiesPage } from './pages/UtilitiesPage';
+import { useRealTimeNews } from './hooks/useRealTimeNews';
+import { useNewsNotifications } from './hooks/useNewsNotifications';
 export function App() {
+  const {
+    news
+  } = useRealTimeNews();
+  const {
+    newNewsCount,
+    refreshNews
+  } = useNewsNotifications(news);
   return <Router>
       <div className="flex flex-col min-h-screen bg-white font-sans text-gray-900">
-        <Header />
+        <Header newNewsCount={newNewsCount} onRefreshNews={refreshNews} />
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
