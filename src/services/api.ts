@@ -188,11 +188,11 @@ const CACHE_DURATION = 60000; // 1 minute
 let marketDataCache: MarketData[] = [{
   symbol: 'DJI',
   name: 'Dow Jones',
-  price: 34567.89,
-  change: 234.56,
-  changePercent: 0.68,
-  high: 34789.12,
-  low: 34234.56,
+  price: 47716.42,
+  change: 289.30,
+  changePercent: 0.61,
+  high: 47750.77,
+  low: 47475.61,
   volume: 345678900
 }, {
   symbol: 'SPX',
@@ -206,57 +206,48 @@ let marketDataCache: MarketData[] = [{
 }, {
   symbol: 'IXIC',
   name: 'Nasdaq',
-  price: 13789.45,
-  change: 89.23,
+  price: 23365.69,
+  change: 151.00,
   changePercent: 0.65,
-  high: 13856.78,
-  low: 13678.9,
+  high: 23365.79,
+  low: 23250.51,
   volume: 456789000
 }, {
   symbol: 'FTSE',
   name: 'FTSE 100',
-  price: 7654.32,
-  change: 45.67,
-  changePercent: 0.6,
-  high: 7689.01,
-  low: 7612.34,
+  price: 9720.51,
+  change: 26.58,
+  changePercent: 0.27,
+  high: 9740.24,
+  low: 9693.95,
   volume: 123456700
 }, {
   symbol: 'N225',
   name: 'Nikkei 225',
-  price: 28456.78,
-  change: -123.45,
-  changePercent: -0.43,
-  high: 28567.89,
-  low: 28345.67,
+  price: 50253.91,
+  change: 86.81,
+  changePercent: 0.17,
+  high: 50258.25,
+  low: 49989.54,
   volume: 234567800
 }, {
   symbol: 'HSI',
   name: 'Hang Seng',
-  price: 19876.54,
-  change: 234.56,
-  changePercent: 1.19,
-  high: 19987.65,
-  low: 19765.43,
+  price: 25858.89,
+  change: -87.04,
+  changePercent: -0.34,
+  high: 26001.06,
+  low: 25807.55,
   volume: 345678900
 }, {
   symbol: 'GOLD',
   name: 'Gold',
-  price: 2087.65,
-  change: 12.34,
-  changePercent: 0.62,
-  high: 2095.43,
-  low: 2078.9,
+  price: 4170.41,
+  change: 0.45,
+  changePercent: 0.01,
+  high: 4171.60,
+  low: 4168.96,
   volume: 123456
-}, {
-  symbol: 'OIL',
-  name: 'Crude Oil',
-  price: 78.45,
-  change: -1.23,
-  changePercent: -1.54,
-  high: 79.87,
-  low: 77.65,
-  volume: 234567
 }];
 
 // API Functions
