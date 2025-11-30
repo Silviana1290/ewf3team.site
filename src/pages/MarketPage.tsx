@@ -1,175 +1,175 @@
 import React from 'react';
-import { NewsCard } from '../components/NewsCard';
-import { Sidebar } from '../components/Sidebar';
-import { useRealTimeNews } from '../hooks/useRealTimeNews';
 import { useMarketData } from '../hooks/useMarketData';
-import { TrendingUp, TrendingDown, Activity, BarChart3 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-export function MarketPage() {
+import { MarketWidgetSkeleton } from '../components/LoadingSkeleton';
+import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
+interface MarketPageProps {
+  language: 'ID' | 'EN';
+}
+export function MarketPage({
+  language
+}: MarketPageProps) {
   const {
-    news
-  } = useRealTimeNews();
-  const {
-    indices
-  } = useMarketData();
-  const marketNews = news.filter(n => n.category === 'Market');
-  const topMovers = [{
-    symbol: 'BBCA',
-    name: 'Bank Central Asia',
-    price: '9,875',
-    change: '+3.45%',
-    volume: '45.2M'
-  }, {
-    symbol: 'BBRI',
-    name: 'Bank Rakyat Indonesia',
-    price: '5,450',
-    change: '+2.87%',
-    volume: '89.3M'
-  }, {
-    symbol: 'TLKM',
-    name: 'Telkom Indonesia',
-    price: '3,890',
-    change: '+1.92%',
-    volume: '67.8M'
-  }, {
-    symbol: 'ASII',
-    name: 'Astra International',
-    price: '6,125',
-    change: '-1.23%',
-    volume: '34.5M'
-  }];
-  return <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-black to-gray-900 text-white py-12 border-b-4 border-[#FF6B00]">
-        <div className="container mx-auto px-4">
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} className="flex items-center gap-4 mb-4">
-            <Activity className="w-12 h-12 text-[#FF6B00]" />
+    data: marketData,
+    loading
+  } = useMarketData(10000); // Update every 10 seconds
+  const categories = {
+    indices: ['DJI', 'SPX', 'IXIC', 'FTSE', 'N225', 'HSI'],
+    commodities: ['GOLD', 'OIL']
+  };
+  const indices = marketData.filter(item => categories.indices.includes(item.symbol));
+  const commodities = marketData.filter(item => categories.commodities.includes(item.symbol));
+  return <div className="py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} className="mb-8">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Pasar Saham</h1>
-              <p className="text-gray-300 text-lg">
-                Update real-time indeks global dan pergerakan saham
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {language === 'ID' ? 'Data Pasar' : 'Market Data'}
+              </h1>
+              <p className="text-gray-600">
+                {language === 'ID' ? 'Data pasar real-time dari bursa global' : 'Real-time market data from global exchanges'}
               </p>
             </div>
-          </motion.div>
-        </div>
-      </div>
+            <motion.div animate={{
+            rotate: 360
+          }} transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'linear'
+          }}>
+              <RefreshCw className="w-5 h-5 text-orange-600" />
+            </motion.div>
+          </div>
+        </motion.div>
 
-      {/* Market Indices Grid */}
-      <div className="bg-white border-b border-gray-200 py-6">
-        <div className="container mx-auto px-4">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[#FF6B00]" />
-            Indeks Global
-            <span className="ml-2 text-xs font-normal text-gray-500 bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">
-              LIVE
-            </span>
+        {/* Indices Section */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {language === 'ID' ? 'Indeks Global' : 'Global Indices'}
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <AnimatePresence mode="wait">
-              {indices.map((index, i) => <motion.div key={index.name} layout initial={{
-              opacity: 0,
-              y: 20
-            }} animate={{
-              opacity: 1,
-              y: 0
-            }} exit={{
-              opacity: 0,
-              scale: 0.9
-            }} transition={{
-              delay: i * 0.1
-            }} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="text-xs text-gray-500 mb-1">{index.name}</div>
-                  <motion.div key={index.value} initial={{
-                scale: 1.1,
-                color: '#FF6B00'
-              }} animate={{
-                scale: 1,
-                color: '#111827'
-              }} transition={{
-                duration: 0.3
-              }} className="text-lg font-bold mb-1">
-                    {index.value}
-                  </motion.div>
-                  <motion.div key={index.change} initial={{
-                scale: 1.1
-              }} animate={{
-                scale: 1
-              }} className={`text-sm font-semibold flex items-center gap-1 ${index.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                    {index.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                    {index.change} ({index.percent})
-                  </motion.div>
-                </motion.div>)}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* News Section */}
-          <div className="lg:col-span-2 space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold mb-6 border-b-2 border-black pb-2">
-                Berita Pasar Terkini
-              </h2>
-              <div className="grid gap-6">
-                {marketNews.map(item => <NewsCard key={item.id} news={item} />)}
-              </div>
-            </div>
-
-            {/* Top Movers */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-                Top Gainers Hari Ini
-              </h3>
-              <div className="space-y-3">
-                {topMovers.map((stock, i) => <motion.div key={stock.symbol} initial={{
-                opacity: 0,
-                x: -20
-              }} animate={{
-                opacity: 1,
-                x: 0
-              }} transition={{
-                delay: i * 0.1
-              }} whileHover={{
-                scale: 1.02,
-                x: 5
-              }} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+          {loading ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map(i => <MarketWidgetSkeleton key={i} />)}
+            </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {indices.map((item, index) => <motion.div key={item.symbol} initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: index * 0.05
+          }} className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow">
+                  <div className="flex items-start justify-between mb-4">
                     <div>
-                      <div className="font-bold text-gray-900">
-                        {stock.symbol}
-                      </div>
-                      <div className="text-xs text-gray-500">{stock.name}</div>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">{item.symbol}</p>
                     </div>
-                    <div className="text-right">
-                      <div className="font-bold text-gray-900">
-                        Rp {stock.price}
+                    <div className={`flex items-center space-x-1 ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {item.change >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-3xl font-bold text-gray-900">
+                        {item.price.toFixed(2)}
+                      </span>
+                      <span className={`text-lg font-semibold ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {item.change >= 0 ? '+' : ''}
+                        {item.changePercent.toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          {language === 'ID' ? 'Tinggi' : 'High'}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {item.high.toFixed(2)}
+                        </p>
                       </div>
-                      <div className={`text-sm font-semibold ${stock.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                        {stock.change}
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          {language === 'ID' ? 'Rendah' : 'Low'}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {item.low.toFixed(2)}
+                        </p>
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      Vol: {stock.volume}
-                    </div>
-                  </motion.div>)}
-              </div>
-            </div>
-          </div>
+                  </div>
+                </motion.div>)}
+            </div>}
+        </section>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <Sidebar />
-          </div>
-        </div>
+        {/* Commodities Section */}
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {language === 'ID' ? 'Komoditas' : 'Commodities'}
+          </h2>
+          {loading ? <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2].map(i => <MarketWidgetSkeleton key={i} />)}
+            </div> : <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {commodities.map((item, index) => <motion.div key={item.symbol} initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: index * 0.05
+          }} className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">{item.symbol}</p>
+                    </div>
+                    <div className={`flex items-center space-x-1 ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {item.change >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-3xl font-bold text-gray-900">
+                        ${item.price.toFixed(2)}
+                      </span>
+                      <span className={`text-lg font-semibold ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {item.change >= 0 ? '+' : ''}
+                        {item.changePercent.toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          {language === 'ID' ? 'Tinggi' : 'High'}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          ${item.high.toFixed(2)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          {language === 'ID' ? 'Rendah' : 'Low'}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          ${item.low.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>)}
+            </div>}
+        </section>
       </div>
     </div>;
 }

@@ -1,84 +1,86 @@
 import React from 'react';
-import { NewsTicker } from '../components/NewsTicker';
-import { NewsCard } from '../components/NewsCard';
-import { Sidebar } from '../components/Sidebar';
+import { NewsFeed } from '../components/NewsFeed';
 import { EconomicIndicators } from '../components/EconomicIndicators';
-import { useRealTimeNews } from '../hooks/useRealTimeNews';
-import { Globe, TrendingUp, DollarSign } from 'lucide-react';
-export function HomePage() {
-  const {
-    news
-  } = useRealTimeNews();
-  const featuredNews = news[0];
-  const globalNews = news.filter(n => n.category === 'Global' || n.category === 'Commodity');
-  const marketNews = news.filter(n => n.category === 'Market' || n.category === 'Fiscal');
-  const economyNews = news.filter(n => n.category === 'Economy' || n.category === 'Monetary');
-  return <div className="min-h-screen bg-white">
+import { motion } from 'framer-motion';
+import { TrendingUp, Globe, BarChart3, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
+interface HomePageProps {
+  language: 'ID' | 'EN';
+}
+export function HomePage({
+  language
+}: HomePageProps) {
+  const quickLinks = [{
+    icon: TrendingUp,
+    title: language === 'ID' ? 'Pasar' : 'Market',
+    description: language === 'ID' ? 'Indeks global dan data pasar real-time' : 'Global indices and real-time market data',
+    link: '/market',
+    color: 'orange'
+  }, {
+    icon: BarChart3,
+    title: language === 'ID' ? 'Analisis' : 'Analysis',
+    description: language === 'ID' ? 'Analisis mendalam dan wawasan pasar' : 'In-depth analysis and market insights',
+    link: '/analysis',
+    color: 'blue'
+  }, {
+    icon: Calendar,
+    title: language === 'ID' ? 'Kalender' : 'Calendar',
+    description: language === 'ID' ? 'Kalender ekonomi dan acara penting' : 'Economic calendar and key events',
+    link: '/calendar',
+    color: 'green'
+  }, {
+    icon: Globe,
+    title: 'Global',
+    description: language === 'ID' ? 'Berita internasional dan tren global' : 'International news and global trends',
+    link: '/global',
+    color: 'purple'
+  }];
+  return <div>
       {/* Hero Section */}
-      <div className="bg-gray-50 border-b border-gray-200">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              {featuredNews && <NewsCard news={featuredNews} variant="featured" />}
-            </div>
-            <div className="lg:col-span-1">
-              <Sidebar />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <NewsTicker />
-
-      {/* Main Content Grid */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Column 1: Global */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2 border-b-2 border-black pb-2 mb-6">
-              <Globe className="w-6 h-6" />
-              <h2 className="text-xl font-bold uppercase">Global</h2>
-            </div>
-            <div className="space-y-6">
-              {globalNews.map(item => <NewsCard key={item.id} news={item} />)}
-            </div>
-          </div>
-
-          {/* Column 2: Market Update */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2 border-b-2 border-black pb-2 mb-6">
-              <TrendingUp className="w-6 h-6" />
-              <h2 className="text-xl font-bold uppercase">Market Update</h2>
-            </div>
-            <div className="space-y-6">
-              {marketNews.map(item => <NewsCard key={item.id} news={item} />)}
-            </div>
-          </div>
-
-          {/* Column 3: Economy */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2 border-b-2 border-black pb-2 mb-6">
-              <DollarSign className="w-6 h-6" />
-              <h2 className="text-xl font-bold uppercase">Economy</h2>
-            </div>
-            <div className="space-y-6">
-              {economyNews.map(item => <NewsCard key={item.id} news={item} />)}
-            </div>
-          </div>
-        </div>
-
-        {/* Economic Indicators Section */}
-        <div className="mt-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Data Ekonomi Penting
-            </h2>
-            <p className="text-gray-600">
-              Panduan lengkap indikator ekonomi dan dampaknya terhadap pasar
+      <section className="bg-gradient-to-br from-orange-50 to-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              {language === 'ID' ? 'Berita Finansial Real-Time' : 'Real-Time Financial News'}
+            </h1>
+            <p className="text-xl text-gray-600 mb-8">
+              {language === 'ID' ? 'Tetap terinformasi dengan berita terkini dari CNBC, Reuters, Investing.com, dan Trading Economics' : 'Stay informed with the latest news from CNBC, Reuters, Investing.com, and Trading Economics'}
             </p>
+          </motion.div>
+
+          {/* Quick Links */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+            {quickLinks.map((link, index) => <motion.div key={link.title} initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: index * 0.1
+          }}>
+                <Link to={link.link} className="block bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow">
+                  <link.icon className={`w-12 h-12 text-${link.color}-600 mb-4`} />
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    {link.title}
+                  </h3>
+                  <p className="text-sm text-gray-600">{link.description}</p>
+                </Link>
+              </motion.div>)}
           </div>
-          <EconomicIndicators />
         </div>
-      </div>
+      </section>
+
+      {/* News Feed */}
+      <NewsFeed language={language} />
+
+      {/* Economic Indicators */}
+      <EconomicIndicators language={language} />
     </div>;
 }

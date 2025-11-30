@@ -1,128 +1,69 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
-export function Footer() {
-  return <footer className="bg-black text-white pt-16 pb-8 border-t-4 border-[#FF6B00]">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Brand Column */}
-          <div>
-            <div className="flex items-center gap-1 mb-4">
-              <span className="text-3xl font-black tracking-tighter">EWF</span>
-              <span className="text-3xl font-black text-[#FF6B00]">PRO</span>
+import { Globe } from 'lucide-react';
+interface FooterProps {
+  language: 'ID' | 'EN';
+}
+export function Footer({
+  language
+}: FooterProps) {
+  return <footer className="bg-gray-900 text-white py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center space-x-2 mb-4">
+              <span className="text-2xl font-bold">EWF</span>
+              <span className="text-2xl font-bold text-orange-600">PRO</span>
+              <div className="w-8 h-8 border-2 border-orange-600 rounded-full flex items-center justify-center">
+                <Globe className="w-4 h-4 text-orange-600" />
+              </div>
             </div>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-              Platform berita finansial terdepan yang menyajikan update pasar
-              terkini, analisis mendalam, dan data ekonomi real-time untuk
-              membantu keputusan investasi Anda.
+            <p className="text-gray-400 text-sm mb-4">
+              {language === 'ID' ? 'Platform berita finansial terpercaya dengan update real-time dari sumber global terkemuka.' : 'Trusted financial news platform with real-time updates from leading global sources.'}
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#FF6B00] transition-colors">
-                <Facebook className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#FF6B00] transition-colors">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#FF6B00] transition-colors">
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-[#FF6B00] transition-colors">
-                <Linkedin className="w-4 h-4" />
-              </a>
-            </div>
+            <p className="text-gray-500 text-xs">
+              © 2025 EWFPRO.{' '}
+              {language === 'ID' ? 'Hak Cipta Dilindungi.' : 'All rights reserved.'}
+            </p>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-bold mb-6 border-b border-gray-800 pb-2 inline-block">
-              Quick Links
+            <h3 className="text-sm font-semibold mb-4">
+              {language === 'ID' ? 'Navigasi' : 'Navigation'}
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <Link to="/market" className="hover:text-[#FF6B00] transition-colors">
-                  Market News
-                </Link>
+                <a href="#market" className="hover:text-orange-600 transition-colors">
+                  Market
+                </a>
               </li>
               <li>
-                <Link to="/economy" className="hover:text-[#FF6B00] transition-colors">
-                  Economy Updates
-                </Link>
+                <a href="#economy" className="hover:text-orange-600 transition-colors">
+                  Economy
+                </a>
               </li>
               <li>
-                <Link to="/commodity" className="hover:text-[#FF6B00] transition-colors">
-                  Commodities
-                </Link>
+                <a href="#commodity" className="hover:text-orange-600 transition-colors">
+                  Commodity
+                </a>
               </li>
               <li>
-                <Link to="/calendar" className="hover:text-[#FF6B00] transition-colors">
-                  Economic Calendar
-                </Link>
-              </li>
-              <li>
-                <Link to="/glossary" className="hover:text-[#FF6B00] transition-colors">
-                  Glossary
-                </Link>
+                <a href="#calendar" className="hover:text-orange-600 transition-colors">
+                  Calendar
+                </a>
               </li>
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
-            <h3 className="text-lg font-bold mb-6 border-b border-gray-800 pb-2 inline-block">
-              Contact Us
+            <h3 className="text-sm font-semibold mb-4">
+              {language === 'ID' ? 'Sumber Berita' : 'News Sources'}
             </h3>
-            <ul className="space-y-4 text-sm text-gray-400">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-[#FF6B00] flex-shrink-0" />
-                <span>
-                  Equity Tower Level 35,
-                  <br />
-                  SCBD Lot 9, Jl. Jend. Sudirman Kav. 52-53,
-                  <br />
-                  Jakarta 12190
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-[#FF6B00] flex-shrink-0" />
-                <span>+62 21 2903 5555</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-[#FF6B00] flex-shrink-0" />
-                <span>support@ewfpro.com</span>
-              </li>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>CNBC</li>
+              <li>Reuters</li>
+              <li>Investing.com</li>
+              <li>Trading Economics</li>
             </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h3 className="text-lg font-bold mb-6 border-b border-gray-800 pb-2 inline-block">
-              Newsletter
-            </h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Dapatkan update berita pasar terbaru langsung di inbox Anda setiap
-              pagi.
-            </p>
-            <form className="flex flex-col gap-2">
-              <input type="email" placeholder="Email address" className="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded focus:outline-none focus:border-[#FF6B00]" />
-              <button className="bg-[#FF6B00] hover:bg-[#e66000] text-white font-bold py-2 rounded transition-colors">
-                Subscribe
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-          <p>&copy; 2025 EWF Pro. All rights reserved.</p>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <a href="#" className="hover:text-white">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-white">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-white">
-              Disclaimer
-            </a>
           </div>
         </div>
       </div>

@@ -1,150 +1,132 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useMarketData } from '../hooks/useMarketData';
+import { useNews } from '../hooks/useNews';
 import { NewsCard } from '../components/NewsCard';
-import { Sidebar } from '../components/Sidebar';
-import { useRealTimeNews } from '../hooks/useRealTimeNews';
-import { useCommodityData } from '../hooks/useMarketData';
-import { Droplet, Wheat, Zap, TrendingUp, TrendingDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-export function CommodityPage() {
+import { NewsModal } from '../components/NewsModal';
+import { MarketWidgetSkeleton, NewsCardSkeleton } from '../components/LoadingSkeleton';
+import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown } from 'lucide-react';
+import { NewsArticle } from '../services/api';
+interface CommodityPageProps {
+  language: 'ID' | 'EN';
+}
+export function CommodityPage({
+  language
+}: CommodityPageProps) {
   const {
-    news
-  } = useRealTimeNews();
+    data: marketData,
+    loading: marketLoading
+  } = useMarketData(10000);
   const {
-    commodities
-  } = useCommodityData();
-  const commodityNews = news.filter(n => n.category === 'Commodity');
-  const iconMap: Record<string, any> = {
-    Droplet: Droplet,
-    TrendingUp: TrendingUp,
-    Zap: Zap,
-    Wheat: Wheat
-  };
-  return <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-amber-900 to-amber-700 text-white py-12 border-b-4 border-[#FF6B00]">
-        <div className="container mx-auto px-4">
+    news,
+    loading: newsLoading
+  } = useNews('Commodities', 6);
+  const [selectedNews, setSelectedNews] = useState<NewsArticle | null>(null);
+  const commodities = marketData.filter(item => ['GOLD', 'OIL'].includes(item.symbol));
+  return <>
+      <div className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial={{
           opacity: 0,
           y: 20
         }} animate={{
           opacity: 1,
           y: 0
-        }} className="flex items-center gap-4 mb-4">
-            <Droplet className="w-12 h-12 text-[#FF6B00]" />
-            <div>
-              <h1 className="text-4xl font-bold mb-2">Komoditas</h1>
-              <p className="text-gray-200 text-lg">
-                Harga komoditas global: Energi, Logam Mulia, dan Pertanian
-              </p>
-            </div>
+        }} className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {language === 'ID' ? 'Komoditas' : 'Commodities'}
+            </h1>
+            <p className="text-gray-600">
+              {language === 'ID' ? 'Harga komoditas dan berita terkait' : 'Commodity prices and related news'}
+            </p>
           </motion.div>
-        </div>
-      </div>
 
-      {/* Commodity Prices Grid */}
-      <div className="bg-white border-b border-gray-200 py-6">
-        <div className="container mx-auto px-4">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            Harga Komoditas Real-Time
-            <span className="ml-2 text-xs font-normal text-gray-500 bg-green-100 text-green-700 px-2 py-1 rounded-full animate-pulse">
-              LIVE
-            </span>
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <AnimatePresence mode="wait">
-              {commodities.map((commodity, i) => {
-              const Icon = iconMap[commodity.icon];
-              return <motion.div key={commodity.name} layout initial={{
-                opacity: 0,
-                y: 20
-              }} animate={{
-                opacity: 1,
-                y: 0
-              }} exit={{
-                opacity: 0,
-                scale: 0.9
-              }} transition={{
-                delay: i * 0.1
-              }} whileHover={{
-                scale: 1.05,
-                y: -5
-              }} className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-lg border border-gray-200 hover:shadow-lg transition-all cursor-pointer group">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon className={`w-5 h-5 ${commodity.color} group-hover:scale-110 transition-transform`} />
-                    </div>
-                    <div className="text-xs text-gray-500 mb-1">
-                      {commodity.name}
-                    </div>
-                    <motion.div key={commodity.price} initial={{
-                  scale: 1.1,
-                  color: '#FF6B00'
-                }} animate={{
-                  scale: 1,
-                  color: '#111827'
-                }} transition={{
-                  duration: 0.3
-                }} className="text-lg font-bold mb-1">
-                      {commodity.price}
-                    </motion.div>
-                    <motion.div key={commodity.change} initial={{
-                  scale: 1.1
-                }} animate={{
-                  scale: 1
-                }} className={`text-sm font-semibold flex items-center gap-1 ${commodity.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                      {commodity.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                      {commodity.change}
-                    </motion.div>
-                    <div className={`text-xs ${commodity.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                      {commodity.percent}
-                    </div>
-                  </motion.div>;
-            })}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* News Section */}
-          <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold mb-6 border-b-2 border-black pb-2">
-              Berita Komoditas Terkini
+          {/* Commodity Prices */}
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              {language === 'ID' ? 'Harga Komoditas' : 'Commodity Prices'}
             </h2>
-            <div className="grid gap-6">
-              {commodityNews.map(item => <NewsCard key={item.id} news={item} />)}
-            </div>
+            {marketLoading ? <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <MarketWidgetSkeleton />
+                <MarketWidgetSkeleton />
+              </div> : <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {commodities.map((item, index) => <motion.div key={item.symbol} initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              delay: index * 0.1
+            }} className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">{item.symbol}</p>
+                      </div>
+                      <div className={`flex items-center space-x-1 ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {item.change >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-baseline space-x-2">
+                        <span className="text-3xl font-bold text-gray-900">
+                          ${item.price.toFixed(2)}
+                        </span>
+                        <span className={`text-lg font-semibold ${item.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {item.change >= 0 ? '+' : ''}
+                          {item.changePercent.toFixed(2)}%
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                        <div>
+                          <p className="text-xs text-gray-500">
+                            {language === 'ID' ? 'Tinggi' : 'High'}
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            ${item.high.toFixed(2)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">
+                            {language === 'ID' ? 'Rendah' : 'Low'}
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            ${item.low.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>)}
+              </div>}
+          </section>
 
-            {/* Commodity Analysis */}
-            <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-[#FF6B00]" />
-                Analisis Pasar Komoditas
-              </h3>
-              <div className="space-y-4 text-gray-700">
-                <p className="leading-relaxed">
-                  Pasar komoditas global menunjukkan volatilitas tinggi minggu
-                  ini, dengan harga minyak mentah terkoreksi akibat kekhawatiran
-                  permintaan dari China, sementara logam mulia terus menguat
-                  seiring ketidakpastian geopolitik.
-                </p>
-                <p className="leading-relaxed">
-                  Emas mencapai level tertinggi dalam 3 bulan terakhir, didorong
-                  oleh ekspektasi penurunan suku bunga The Fed dan meningkatnya
-                  permintaan safe haven. Sementara itu, komoditas pertanian
-                  menunjukkan tren positif dengan gandum dan kopi mengalami
-                  kenaikan harga.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <Sidebar />
-          </div>
+          {/* Commodity News */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              {language === 'ID' ? 'Berita Komoditas' : 'Commodity News'}
+            </h2>
+            {newsLoading ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => <NewsCardSkeleton key={i} />)}
+              </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {news.map((article, index) => <motion.div key={article.id} initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              delay: index * 0.1
+            }}>
+                    <NewsCard {...article} onClick={() => setSelectedNews(article)} />
+                  </motion.div>)}
+              </div>}
+          </section>
         </div>
       </div>
-    </div>;
+
+      <NewsModal news={selectedNews} onClose={() => setSelectedNews(null)} language={language} />
+    </>;
 }

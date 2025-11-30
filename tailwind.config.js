@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   content: [
   './index.html',
@@ -7,33 +6,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: '#FF6B00',
-          50: '#FFE5D6',
-          100: '#FFD4B8',
-          200: '#FFB380',
-          300: '#FF9247',
-          400: '#FF7F1F',
-          500: '#FF6B00',
-          600: '#D65800',
-          700: '#AD4700',
-          800: '#853600',
-          900: '#5C2500',
-        },
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        accent: {
+          primary: '#FF6B00',
+          secondary: '#FFA500',
+        }
       },
       animation: {
-        'ticker': 'ticker 20s linear infinite',
-      },
-      keyframes: {
-        ticker: {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
-      },
-    },
+        'slide-in': 'slideInRight 0.5s ease-out',
+        'fade-in': 'fadeIn 0.3s ease-in',
+        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 }
