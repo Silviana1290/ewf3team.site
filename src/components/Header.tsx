@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, X, Search, Globe, User, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 /* ======================
@@ -20,12 +20,12 @@ const NAV_ITEMS = [
   { id: 'market', label: { ID: 'Pasar', EN: 'Market' } },
   { id: 'economy', label: { ID: 'Ekonomi', EN: 'Economy' } },
   { id: 'commodity', label: { ID: 'Komoditas', EN: 'Commodity' } },
-  { id: 'fiscal', label: { ID: 'Fiskal & Moneter', EN: 'Fiscal & Monetary' } },
+  { id: 'fiscal', label: { ID: 'Fiskal', EN: 'Fiscal' } },      // dipendekkan
   { id: 'calendar', label: { ID: 'Kalender', EN: 'Calendar' } },
   { id: 'global', label: { ID: 'Global', EN: 'Global' } },
-  { id: 'analysis', label: { ID: 'Analisis Pasar', EN: 'Market Analysis' } },
+  { id: 'analysis', label: { ID: 'Analisis', EN: 'Analysis' } }, // dipendekkan
   { id: 'utilities', label: { ID: 'Utilitas', EN: 'Utilities' } },
-  { id: 'news', label: { ID: 'Arsip Berita', EN: 'News Archive' } },
+  { id: 'news', label: { ID: 'Arsip', EN: 'Archive' } },
   { id: 'glossary', label: { ID: 'Glosarium', EN: 'Glossary' } }
 ];
 
@@ -35,29 +35,18 @@ const UI_TEXT = {
     EN: 'Global Market Intelligence'
   },
   search: {
-    ID: 'Cari berita dan analisis...',
+    ID: 'Cari berita & analisis...',
     EN: 'Search news & analysis...'
   },
-  menu: {
-    ID: 'Navigasi',
-    EN: 'Navigation'
-  },
-  login: {
-    ID: 'Masuk',
-    EN: 'Login'
-  },
-  register: {
-    ID: 'Daftar',
-    EN: 'Register'
-  },
-  logout: {
-    ID: 'Keluar',
-    EN: 'Logout'
-  }
+  login: { ID: 'Masuk', EN: 'Login' },
+  register: { ID: 'Daftar', EN: 'Register' },
+  logout: { ID: 'Keluar', EN: 'Logout' }
 };
 
-const navClass =
-  'px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-700 hover:text-orange-600 hover:bg-orange-50';
+const navBase =
+  'relative px-3 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors';
+const navIdle = 'text-gray-700 hover:text-orange-600 hover:bg-orange-50';
+const navActive = 'text-orange-600';
 
 /* ======================
    Component
@@ -68,59 +57,83 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const { user, logout, isAuthenticated } = useAuth();
+  const location = useLocation();
 
   return (
     <>
       {/* ================= HEADER ================= */}
       <motion.header
         animate={{
-          height: isScrolled ? '80px' : '120px',
-          paddingTop: isScrolled ? '12px' : '20px',
-          paddingBottom: isScrolled ? '12px' : '20px'
+          height: isScrolled ? 76 : 112,
+          backdropFilter: isScrolled ? 'blur(8px)' : 'blur(0px)',
+          backgroundColor: isScrolled ? 'rgba(255,255,255,0.9)' : '#ffffff'
         }}
-        transition={{ duration: 0.3 }}
-        className="fixed top-0 inset-x-0 bg-white border-b border-gray-200 z-50 shadow-sm"
+        transition={{ duration: 0.25, ease: 'easeInOut' }}
+        className="fixed top-0 inset-x-0 z-50 border-b border-gray-200"
       >
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-          {/* Logo */}
-          <motion.div
-            animate={{ scale: isScrolled ? 0.9 : 1 }}
-            className="flex items-center gap-3"
-          >
-            <div className="flex items-center">
-              <span className="text-3xl font-bold text-gray-900">EWF</span>
-              <span className="text-3xl font-bold text-orange-600">PRO</span>
-              <div className="ml-2 w-8 h-8 border-2 border-orange-600 rounded-full flex items-center justify-center">
-                <Globe className="w-4 h-4 text-orange-600" />
+          {/* Logo (Clickable to Home) */}
+          <Link to="/" className="group">
+            <motion.div
+              animate={{ scale: isScrolled ? 0.92 : 1 }}
+              className="flex items-center gap-3 cursor-pointer"
+            >
+              <div className="flex items-center">
+                <span className="text-3xl font-extrabold tracking-tight text-gray-900">
+                  EWF
+                </span>
+                <span className="text-3xl font-extrabold tracking-tight text-orange-600">
+                  PRO
+                </span>
+                <div className="ml-2 w-8 h-8 border-2 border-orange-600 rounded-full flex items-center justify-center">
+                  <Globe className="w-4 h-4 text-orange-600" />
+                </div>
               </div>
-            </div>
 
-            {!isScrolled && (
-              <p className="hidden lg:block text-xs uppercase tracking-wide text-gray-600">
-                {UI_TEXT.tagline[language]}
-              </p>
-            )}
-          </motion.div>
+              {!isScrolled && (
+                <p className="hidden lg:block text-xs uppercase tracking-wider text-gray-600 group-hover:text-gray-800 transition">
+                  {UI_TEXT.tagline[language]}
+                </p>
+              )}
+            </motion.div>
+          </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex gap-1">
-            {NAV_ITEMS.map(item =>
-              item.id === 'glossary' ? (
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-2 whitespace-nowrap">
+            {NAV_ITEMS.map(item => {
+              const isActive =
+                location.pathname === `/${item.id}` ||
+                (item.id === 'market' && location.pathname === '/');
+
+              const content = (
+                <span className="relative">
+                  {item.label[language]}
+                  {isActive && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-orange-600 rounded-full" />
+                  )}
+                </span>
+              );
+
+              return item.id === 'glossary' ? (
                 <a
                   key={item.id}
                   href="https://www.equityworld-futures.com/index.php/id/edukasi/glosarium"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={navClass}
+                  className={`${navBase} ${navIdle}`}
                 >
-                  {item.label[language]}
+                  {content}
                 </a>
               ) : (
-                <Link key={item.id} to={`/${item.id}`} className={navClass}>
-                  {item.label[language]}
+                <Link
+                  key={item.id}
+                  to={`/${item.id}`}
+                  className={`${navBase} ${isActive ? navActive : navIdle}`}
+                >
+                  {content}
                 </Link>
-              )
-            )}
+              );
+            })}
           </nav>
 
           {/* Actions */}
@@ -128,7 +141,8 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
             {/* Search */}
             <button
               onClick={() => setSearchOpen(v => !v)}
-              className="p-2 rounded-md hover:bg-orange-50 text-gray-600 hover:text-orange-600"
+              className="p-2 rounded-md text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition"
+              aria-label="Search"
             >
               <Search className="w-5 h-5" />
             </button>
@@ -139,10 +153,10 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
                 <button
                   key={lang}
                   onClick={() => onLanguageChange(lang)}
-                  className={`px-3 py-1 text-sm rounded ${
+                  className={`px-3 py-1 text-sm rounded transition ${
                     language === lang
-                      ? 'bg-white text-orange-600 shadow'
-                      : 'text-gray-600'
+                      ? 'bg-white text-orange-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   {lang}
@@ -155,50 +169,57 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
               <div className="relative hidden md:block">
                 <button
                   onClick={() => setUserMenuOpen(v => !v)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-orange-50"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-orange-50 transition"
                 >
                   <User className="w-4 h-4" />
-                  <span className="text-sm">{user?.name}</span>
+                  <span className="text-sm font-medium">{user?.name}</span>
                 </button>
 
-                {userMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow"
-                  >
-                    <div className="px-4 py-3 border-b">
-                      <p className="text-sm font-medium">{user?.name}</p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <button
-                      onClick={logout}
-                      className="w-full px-4 py-2 flex items-center gap-2 text-sm hover:bg-orange-50"
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      className="absolute right-0 mt-2 w-52 bg-white border rounded-xl shadow-lg overflow-hidden"
                     >
-                      <LogOut className="w-4 h-4" />
-                      {UI_TEXT.logout[language]}
-                    </button>
-                  </motion.div>
-                )}
+                      <div className="px-4 py-3 border-b">
+                        <p className="text-sm font-semibold">{user?.name}</p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
+                      </div>
+                      <button
+                        onClick={logout}
+                        className="w-full px-4 py-3 flex items-center gap-2 text-sm hover:bg-orange-50 transition"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        {UI_TEXT.logout[language]}
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <div className="hidden md:flex gap-2">
-                <Link to="/login" className="px-4 py-2 text-sm">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 transition"
+                >
                   {UI_TEXT.login[language]}
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 text-sm bg-orange-600 text-white rounded-md"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-md transition"
                 >
                   {UI_TEXT.register[language]}
                 </Link>
               </div>
             )}
 
-            {/* Mobile */}
+            {/* Mobile Toggle */}
             <button
               onClick={() => setMobileMenuOpen(v => !v)}
-              className="lg:hidden p-2"
+              className="lg:hidden p-2 rounded-md hover:bg-orange-50 transition"
+              aria-label="Menu"
             >
               {mobileMenuOpen ? <X /> : <Menu />}
             </button>
@@ -212,13 +233,13 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="border-t bg-white"
+              className="border-t bg-white/95 backdrop-blur"
             >
               <div className="max-w-7xl mx-auto px-4 py-4">
                 <input
                   autoFocus
                   placeholder={UI_TEXT.search[language]}
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </motion.div>
