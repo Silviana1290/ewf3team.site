@@ -20,10 +20,10 @@ const NAV_ITEMS = [
   { id: 'market', label: { ID: 'Pasar', EN: 'Market' } },
   { id: 'economy', label: { ID: 'Ekonomi', EN: 'Economy' } },
   { id: 'commodity', label: { ID: 'Komoditas', EN: 'Commodity' } },
-  { id: 'fiscal', label: { ID: 'Fiskal', EN: 'Fiscal' } },      // dipendekkan
+  { id: 'fiscal', label: { ID: 'Fiskal', EN: 'Fiscal' } },
   { id: 'calendar', label: { ID: 'Kalender', EN: 'Calendar' } },
   { id: 'global', label: { ID: 'Global', EN: 'Global' } },
-  { id: 'analysis', label: { ID: 'Analisis', EN: 'Analysis' } }, // dipendekkan
+  { id: 'analysis', label: { ID: 'Analisis', EN: 'Analysis' } },
   { id: 'utilities', label: { ID: 'Utilitas', EN: 'Utilities' } },
   { id: 'news', label: { ID: 'Arsip', EN: 'Archive' } },
   { id: 'glossary', label: { ID: 'Glosarium', EN: 'Glossary' } }
@@ -65,24 +65,24 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
       <motion.header
         animate={{
           height: isScrolled ? 76 : 112,
-          backdropFilter: isScrolled ? 'blur(8px)' : 'blur(0px)',
-          backgroundColor: isScrolled ? 'rgba(255,255,255,0.9)' : '#ffffff'
+          backgroundColor: isScrolled ? 'rgba(255,255,255,0.9)' : '#ffffff',
+          backdropFilter: isScrolled ? 'blur(8px)' : 'blur(0px)'
         }}
         transition={{ duration: 0.25, ease: 'easeInOut' }}
         className="fixed top-0 inset-x-0 z-50 border-b border-gray-200"
       >
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-          {/* Logo (Clickable to Home) */}
+          {/* Logo */}
           <Link to="/" className="group">
             <motion.div
               animate={{ scale: isScrolled ? 0.92 : 1 }}
               className="flex items-center gap-3 cursor-pointer"
             >
               <div className="flex items-center">
-                <span className="text-3xl font-extrabold tracking-tight text-gray-900">
+                <span className="text-3xl font-extrabold text-gray-900">
                   EWF
                 </span>
-                <span className="text-3xl font-extrabold tracking-tight text-orange-600">
+                <span className="text-3xl font-extrabold text-orange-600">
                   PRO
                 </span>
                 <div className="ml-2 w-8 h-8 border-2 border-orange-600 rounded-full flex items-center justify-center">
@@ -91,21 +91,21 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
               </div>
 
               {!isScrolled && (
-                <p className="hidden lg:block text-xs uppercase tracking-wider text-gray-600 group-hover:text-gray-800 transition">
+                <p className="hidden lg:block text-xs uppercase tracking-wider text-gray-600">
                   {UI_TEXT.tagline[language]}
                 </p>
               )}
             </motion.div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-2 whitespace-nowrap">
             {NAV_ITEMS.map(item => {
               const isActive =
                 location.pathname === `/${item.id}` ||
                 (item.id === 'market' && location.pathname === '/');
 
-              const content = (
+              const label = (
                 <span className="relative">
                   {item.label[language]}
                   {isActive && (
@@ -122,7 +122,7 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
                   rel="noopener noreferrer"
                   className={`${navBase} ${navIdle}`}
                 >
-                  {content}
+                  {label}
                 </a>
               ) : (
                 <Link
@@ -130,19 +130,18 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
                   to={`/${item.id}`}
                   className={`${navBase} ${isActive ? navActive : navIdle}`}
                 >
-                  {content}
+                  {label}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Actions */}
+          {/* Right Actions */}
           <div className="flex items-center gap-3">
             {/* Search */}
             <button
               onClick={() => setSearchOpen(v => !v)}
               className="p-2 rounded-md text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition"
-              aria-label="Search"
             >
               <Search className="w-5 h-5" />
             </button>
@@ -156,7 +155,7 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
                   className={`px-3 py-1 text-sm rounded transition ${
                     language === lang
                       ? 'bg-white text-orange-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      : 'text-gray-600'
                   }`}
                 >
                   {lang}
@@ -164,8 +163,26 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
               ))}
             </div>
 
-            {/* Auth */}
-            {isAuthenticated ? (
+            {/* Auth CTA */}
+            {!isAuthenticated ? (
+              <div className="hidden md:flex items-center gap-4 ml-2">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-gray-700 hover:text-orange-600 transition"
+                >
+                  {UI_TEXT.login[language]}
+                </Link>
+
+                <span className="h-5 w-px bg-gray-300" />
+
+                <Link
+                  to="/register"
+                  className="px-5 py-2 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-full shadow-sm transition"
+                >
+                  {UI_TEXT.register[language]}
+                </Link>
+              </div>
+            ) : (
               <div className="relative hidden md:block">
                 <button
                   onClick={() => setUserMenuOpen(v => !v)}
@@ -181,7 +198,7 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
                       initial={{ opacity: 0, y: -6 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -6 }}
-                      className="absolute right-0 mt-2 w-52 bg-white border rounded-xl shadow-lg overflow-hidden"
+                      className="absolute right-0 mt-2 w-52 bg-white border rounded-xl shadow-lg"
                     >
                       <div className="px-4 py-3 border-b">
                         <p className="text-sm font-semibold">{user?.name}</p>
@@ -198,28 +215,12 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
-              <div className="hidden md:flex gap-2">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 transition"
-                >
-                  {UI_TEXT.login[language]}
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-md transition"
-                >
-                  {UI_TEXT.register[language]}
-                </Link>
-              </div>
             )}
 
-            {/* Mobile Toggle */}
+            {/* Mobile Menu */}
             <button
               onClick={() => setMobileMenuOpen(v => !v)}
               className="lg:hidden p-2 rounded-md hover:bg-orange-50 transition"
-              aria-label="Menu"
             >
               {mobileMenuOpen ? <X /> : <Menu />}
             </button>
@@ -233,13 +234,13 @@ export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) 
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="border-t bg-white/95 backdrop-blur"
+              className="border-t bg-white"
             >
               <div className="max-w-7xl mx-auto px-4 py-4">
                 <input
                   autoFocus
                   placeholder={UI_TEXT.search[language]}
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </motion.div>
