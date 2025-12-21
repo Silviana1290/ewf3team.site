@@ -91,7 +91,6 @@ export function Header({
             }} exit={{
               opacity: 0
             }} className="hidden lg:block text-xs uppercase tracking-wide text-gray-600">
-                  The Investor Understanding News
                 </motion.p>}
             </motion.div>
               </Link>
