@@ -197,7 +197,7 @@ export function Header({
       }} transition={{
         type: 'tween',
         duration: 0.3
-      }} className="fixed inset-0 z-40 lg:hidden">
+      }} className="fixed inset-0 z-[60] lg:hidden">
             <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setMobileMenuOpen(false)} />
             <div className="fixed right-0 top-0 bottom-0 w-80 bg-white shadow-xl overflow-y-auto">
               <div className="p-6">
