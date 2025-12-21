@@ -74,12 +74,11 @@ export function Header({
             duration: 0.3
           }}>
               <div className="flex items-center">
-                <span className="text-2xl sm:text-3xl font-bold text-gray-900">
+                <span className="text-lg sm:text-xl font-semibold tracking-tight text-gray-900">
                   EWF
+                  <span className="text-orange-600">PRO</span>
                 </span>
-                <span className="text-2xl sm:text-3xl font-bold text-orange-600">
-                  PRO
-                </span>
+              </div>
                 <div className="ml-2 w-8 h-8 border-2 border-orange-600 rounded-full flex items-center justify-center">
                   <Globe className="w-4 h-4 text-orange-600" />
                 </div>
