@@ -67,6 +67,7 @@ export function Header({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex items-center justify-between h-full">
             {/* Logo */}
+            <Link to="/" className="block">
             <motion.div className="flex items-center space-x-3" animate={{
             scale: isScrolled ? 0.9 : 1
           }} transition={{
@@ -89,10 +90,11 @@ export function Header({
               opacity: 1
             }} exit={{
               opacity: 0
-            }} className="hidden lg:block text-xs text-gray-600 uppercase tracking-wide">
+            }} className="hidden lg:block text-xs uppercase tracking-wide text-gray-600">
                   The Investor Understanding News
                 </motion.p>}
             </motion.div>
+              </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-2 whitespace-nowrap">
