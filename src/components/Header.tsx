@@ -78,7 +78,6 @@ export function Header({
                   EWF
                   <span className="text-orange-600">PRO</span>
                 </span>
-              </div>
                 <div className="ml-2 w-8 h-8 border-2 border-orange-600 rounded-full flex items-center justify-center">
                   <Globe className="w-4 h-4 text-orange-600" />
                 </div>
