@@ -95,7 +95,7 @@ export function Header({
             </motion.div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-1">
+            <nav className="hidden lg:flex items-center gap-2 whitespace-nowrap">
               {navItems.map(item => item.id === 'glossary' ? <a key={item.id} href="https://www.equityworld-futures.com/index.php/id/edukasi/glosarium" target="_blank" rel="noopener noreferrer" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors">
                     {item.label}
                   </a> : <Link key={item.id} to={`/${item.id}`} className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors">
