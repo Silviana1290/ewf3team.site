@@ -1,252 +1,215 @@
-import React, { useState } from 'react';
-import { Menu, X, Search, Globe, User, LogOut } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Menu, X, LogOut } from 'lucide-react'
 
-/* ======================
-   Types
-====================== */
-interface HeaderProps {
-  isScrolled: boolean;
-  language: 'ID' | 'EN';
-  onLanguageChange: (lang: 'ID' | 'EN') => void;
-}
-
-/* ======================
-   Constants
-====================== */
 const NAV_ITEMS = [
-  { id: 'market', label: { ID: 'Pasar', EN: 'Market' } },
-  { id: 'economy', label: { ID: 'Ekonomi', EN: 'Economy' } },
-  { id: 'commodity', label: { ID: 'Komoditas', EN: 'Commodity' } },
-  { id: 'fiscal', label: { ID: 'Fiskal', EN: 'Fiscal' } },
-  { id: 'calendar', label: { ID: 'Kalender', EN: 'Calendar' } },
-  { id: 'global', label: { ID: 'Global', EN: 'Global' } },
-  { id: 'analysis', label: { ID: 'Analisis', EN: 'Analysis' } },
-  { id: 'utilities', label: { ID: 'Utilitas', EN: 'Utilities' } },
-  { id: 'news', label: { ID: 'Arsip', EN: 'Archive' } },
-  { id: 'glossary', label: { ID: 'Glosarium', EN: 'Glossary' } }
-];
+  { id: '', label: { id: 'Beranda', en: 'Home' } },
+  { id: 'about', label: { id: 'Tentang', en: 'About' } },
+  { id: 'services', label: { id: 'Layanan', en: 'Services' } },
+  { id: 'news', label: { id: 'Berita', en: 'News' } },
+  { id: 'contact', label: { id: 'Kontak', en: 'Contact' } },
+  { id: 'glossary', label: { id: 'Glosarium', en: 'Glossary' } }
+]
 
 const UI_TEXT = {
-  tagline: {
-    ID: 'Memahami Pasar Secara Global',
-    EN: 'Global Market Intelligence'
-  },
-  search: {
-    ID: 'Cari berita & analisis...',
-    EN: 'Search news & analysis...'
-  },
-  login: { ID: 'Masuk', EN: 'Login' },
-  register: { ID: 'Daftar', EN: 'Register' },
-  logout: { ID: 'Keluar', EN: 'Logout' }
-};
+  login: { id: 'Masuk', en: 'Login' },
+  register: { id: 'Daftar', en: 'Register' },
+  logout: { id: 'Keluar', en: 'Logout' }
+}
 
-const navBase =
-  'relative px-3 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors';
-const navIdle = 'text-gray-700 hover:text-orange-600 hover:bg-orange-50';
-const navActive = 'text-orange-600';
+export default function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [language] = useState<'id' | 'en'>('id')
 
-/* ======================
-   Component
-====================== */
-export function Header({ isScrolled, language, onLanguageChange }: HeaderProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  // SIMULASI AUTH (ganti dengan context / redux / auth asli)
+  const isAuthenticated = false
+  const logout = () => console.log('logout')
 
-  const { user, logout, isAuthenticated } = useAuth();
-  const location = useLocation();
+  const navigate = useNavigate()
 
   return (
     <>
       {/* ================= HEADER ================= */}
       <motion.header
-        animate={{
-          height: isScrolled ? 76 : 112,
-          backgroundColor: isScrolled ? 'rgba(255,255,255,0.9)' : '#ffffff',
-          backdropFilter: isScrolled ? 'blur(8px)' : 'blur(0px)'
-        }}
-        transition={{ duration: 0.25, ease: 'easeInOut' }}
-        className="fixed top-0 inset-x-0 z-50 border-b border-gray-200"
+        initial={{ y: -60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-50 bg-white border-b"
       >
-        <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="group">
-            <motion.div
-              animate={{ scale: isScrolled ? 0.92 : 1 }}
-              className="flex items-center gap-3 cursor-pointer"
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="h-16 flex items-center justify-between">
+            
+            {/* LOGO */}
+            <Link
+              to="/"
+              className="flex items-center gap-2 font-bold text-lg text-gray-900"
             >
-              <div className="flex items-center">
-                <span className="text-3xl font-extrabold text-gray-900">
-                  EWF
-                </span>
-                <span className="text-3xl font-extrabold text-orange-600">
-                  PRO
-                </span>
-                <div className="ml-2 w-8 h-8 border-2 border-orange-600 rounded-full flex items-center justify-center">
-                  <Globe className="w-4 h-4 text-orange-600" />
-                </div>
-              </div>
+              <img
+                src="/logo-ewf.png"
+                alt="EWF"
+                className="h-8 w-auto"
+              />
+              <span className="hidden sm:block">Equity World Futures</span>
+            </Link>
 
-              {!isScrolled && (
-                <p className="hidden lg:block text-xs uppercase tracking-wider text-gray-600">
-                  {UI_TEXT.tagline[language]}
-                </p>
+            {/* NAV DESKTOP */}
+            <nav className="hidden lg:flex items-center gap-6">
+              {NAV_ITEMS.map(item =>
+                item.id === 'glossary' ? (
+                  <a
+                    key={item.id}
+                    href="https://www.equityworld-futures.com/index.php/id/edukasi/glosarium"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-gray-700 hover:text-orange-600"
+                  >
+                    {item.label[language]}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.id}
+                    to={`/${item.id}`}
+                    className="text-sm font-medium text-gray-700 hover:text-orange-600"
+                  >
+                    {item.label[language]}
+                  </Link>
+                )
               )}
-            </motion.div>
-          </Link>
+            </nav>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-2 whitespace-nowrap">
-            {NAV_ITEMS.map(item => {
-              const isActive =
-                location.pathname === `/${item.id}` ||
-                (item.id === 'market' && location.pathname === '/');
-
-              const label = (
-                <span className="relative">
-                  {item.label[language]}
-                  {isActive && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-orange-600 rounded-full" />
-                  )}
-                </span>
-              );
-
-              return item.id === 'glossary' ? (
-                <a
-                  key={item.id}
-                  href="https://www.equityworld-futures.com/index.php/id/edukasi/glosarium"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${navBase} ${navIdle}`}
-                >
-                  {label}
-                </a>
+            {/* CTA DESKTOP */}
+            <div className="hidden lg:flex items-center gap-3">
+              {!isAuthenticated ? (
+                <>
+                  <Link
+                    to="/login"
+                    className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-gray-100"
+                  >
+                    {UI_TEXT.login[language]}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 text-sm font-semibold text-white bg-orange-600 rounded-lg hover:bg-orange-700"
+                  >
+                    {UI_TEXT.register[language]}
+                  </Link>
+                </>
               ) : (
-                <Link
-                  key={item.id}
-                  to={`/${item.id}`}
-                  className={`${navBase} ${isActive ? navActive : navIdle}`}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Right Actions */}
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <button
-              onClick={() => setSearchOpen(v => !v)}
-              className="p-2 rounded-md text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-
-            {/* Language */}
-            <div className="hidden sm:flex bg-gray-100 p-1 rounded-md">
-              {(['ID', 'EN'] as const).map(lang => (
                 <button
-                  key={lang}
-                  onClick={() => onLanguageChange(lang)}
-                  className={`px-3 py-1 text-sm rounded transition ${
-                    language === lang
-                      ? 'bg-white text-orange-600 shadow-sm'
-                      : 'text-gray-600'
-                  }`}
+                  onClick={logout}
+                  className="flex items-center gap-2 px-4 py-2 border rounded-lg"
                 >
-                  {lang}
+                  <LogOut className="w-4 h-4" />
+                  {UI_TEXT.logout[language]}
                 </button>
-              ))}
+              )}
             </div>
 
-            {/* Auth CTA */}
-            {!isAuthenticated ? (
-              <div className="hidden md:flex items-center gap-4 ml-2">
-                <Link
-                  to="/login"
-                  className="text-sm font-medium text-gray-700 hover:text-orange-600 transition"
-                >
-                  {UI_TEXT.login[language]}
-                </Link>
-
-                <span className="h-5 w-px bg-gray-300" />
-
-                <Link
-                  to="/register"
-                  className="px-5 py-2 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-full shadow-sm transition"
-                >
-                  {UI_TEXT.register[language]}
-                </Link>
-              </div>
-            ) : (
-              <div className="relative hidden md:block">
-                <button
-                  onClick={() => setUserMenuOpen(v => !v)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-orange-50 transition"
-                >
-                  <User className="w-4 h-4" />
-                  <span className="text-sm font-medium">{user?.name}</span>
-                </button>
-
-                <AnimatePresence>
-                  {userMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -6 }}
-                      className="absolute right-0 mt-2 w-52 bg-white border rounded-xl shadow-lg"
-                    >
-                      <div className="px-4 py-3 border-b">
-                        <p className="text-sm font-semibold">{user?.name}</p>
-                        <p className="text-xs text-gray-500">{user?.email}</p>
-                      </div>
-                      <button
-                        onClick={logout}
-                        className="w-full px-4 py-3 flex items-center gap-2 text-sm hover:bg-orange-50 transition"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        {UI_TEXT.logout[language]}
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
-
-            {/* Mobile Menu */}
+            {/* HAMBURGER */}
             <button
-              onClick={() => setMobileMenuOpen(v => !v)}
-              className="lg:hidden p-2 rounded-md hover:bg-orange-50 transition"
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 rounded-md hover:bg-gray-100"
             >
-              {mobileMenuOpen ? <X /> : <Menu />}
+              <Menu className="w-6 h-6" />
             </button>
           </div>
         </div>
+      </motion.header>
 
-        {/* Search Bar */}
-        <AnimatePresence>
-          {searchOpen && (
+      {/* ================= MOBILE SIDEBAR ================= */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 lg:hidden"
+          >
+            {/* OVERLAY */}
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+
+            {/* SIDEBAR */}
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="border-t bg-white"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.3 }}
+              className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl flex flex-col"
             >
-              <div className="max-w-7xl mx-auto px-4 py-4">
-                <input
-                  autoFocus
-                  placeholder={UI_TEXT.search[language]}
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
-                />
+              {/* HEADER */}
+              <div className="flex items-center justify-between px-6 py-4 border-b">
+                <span className="font-bold text-lg">Menu</span>
+                <button onClick={() => setMobileMenuOpen(false)}>
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* MENU */}
+              <nav className="flex-1 px-4 py-4 space-y-1">
+                {NAV_ITEMS.map(item =>
+                  item.id === 'glossary' ? (
+                    <a
+                      key={item.id}
+                      href="https://www.equityworld-futures.com/index.php/id/edukasi/glosarium"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-orange-50"
+                    >
+                      {item.label[language]}
+                    </a>
+                  ) : (
+                    <Link
+                      key={item.id}
+                      to={`/${item.id}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-orange-50"
+                    >
+                      {item.label[language]}
+                    </Link>
+                  )
+                )}
+              </nav>
+
+              {/* CTA MOBILE */}
+              <div className="border-t px-4 py-4 space-y-3">
+                {!isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block w-full text-center px-4 py-3 border rounded-lg"
+                    >
+                      {UI_TEXT.login[language]}
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block w-full text-center px-4 py-3 bg-orange-600 text-white rounded-lg"
+                    >
+                      {UI_TEXT.register[language]}
+                    </Link>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      logout()
+                      setMobileMenuOpen(false)
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border rounded-lg"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {UI_TEXT.logout[language]}
+                  </button>
+                )}
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.header>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
-  );
+  )
 }
