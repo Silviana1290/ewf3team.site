@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { Header } from './components/Header';
+import Header from './components/Header'
 import { WorldClock } from './components/WorldClock';
 import { MarketTicker } from './components/MarketTicker';
 import { Footer } from './components/Footer';
